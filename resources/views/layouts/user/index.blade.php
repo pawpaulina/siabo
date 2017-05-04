@@ -5,9 +5,9 @@
 @if ($users->count())
 	<nav id="nav">
 		<h3 class="col-md-2">
-			{{--<a class="btn btn-success" href="{{asset('user/register')}}">--}}
-				{{--<i class="fa fa-plus-circle" aria-hidden="true"></i> Tambah User--}}
-			{{--</a>--}}
+			<a class="btn btn-success" href="{{asset('auth/registeruser')}}">
+				<i class="fa fa-plus-circle" aria-hidden="true"></i> Tambah User
+			</a>
 		</h3>
 	</nav>
 	<div class="col-xs-12">

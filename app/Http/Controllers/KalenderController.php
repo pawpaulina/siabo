@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\Event;
+use App\TugasPokok;
 use Illuminate\Http\Request;
 use App\User;
 use App\Store;
@@ -281,7 +282,7 @@ class KalenderController extends Controller
     {
         try
         {
-            \DB::beginTransaction();
+            \DB::beginTransaction(); //buat kalau gagal save
             $plan = Plan::findorfail($idjadwal);
             $plan->tgl_plan_mulai = $request->tgl_mulai;
             $plan->tgl_plan_selesai = $request->tgl_mulai;
@@ -289,7 +290,7 @@ class KalenderController extends Controller
             $plan->jam_selesai = $request->timeend;
             $plan->save();
 
-            //cek userny
+            //cek usernya
             if($id_user == $plan->id_user)
             {
                 foreach ($request->id as $index => $id)

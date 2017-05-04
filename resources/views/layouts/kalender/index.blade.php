@@ -1,182 +1,5 @@
 @extends('app')
 
-@section('script')
-<script src='{{url("js/moment.js")}}'></script>
-<script src='{{url("js/fullcalendar.min.js")}}'></script>
-<script src='{{url("js/bootstrap-material-datetimepicker.js")}}'></script>
-<script type="text/javascript">
-	
-	$(document).ready(function()
-	{
-		var date = new Date();
-		var d = date.getDate();
-		var m = date.getMonth();
-		var y = date.getFullYear();
-		var wrapper = $(".field");
-		var add_todo = $(".add_field");
-		var edit_field = $(".edit_field");
-		var max_todo = 10; //maksimal to do user
-		var x = 1; //inisial dari to do
-		
-		var calendar = 
-		//buat kalender
-		$('#calendar')
-		.fullCalendar({
-			header :
-			{
-				left : 'prev,next today',
-				center : 'title',
-				right : 'month,agendaDay'
-			},
-			defaultView : 'month',
-			selectable : true,
-			selectHelper : true,
-			editable : true,
-			allday : false,
-			eventSources: [
-				{
-					url: '{{url("/kalender/plan/".$user->id_user)}}'
-				}
-			],
-			eventDrop: function(event, delta, revertFunc)
-			{
-				//alert(moment(event.start).format('DD-MM-YYYY'));
-				var datestart = moment(event.start).format('DD/MM/YYYY');
-				var dateend = moment(event.end).format('DD/MM/YYYY');
-				var jammulai = moment(event.start).format('HH:mm');
-		    	var jamselesai = moment(event.end).format('HH:mm');
-				$.ajax({
-					method : 'GET',
-					url : '{{url('kalender/plan/edit/drag')}}',
-					data : { tgl_mul : datestart, tgl_sel : dateend, plan_id : event.id, start : jammulai, end : jamselesai}
-				});
-		    },
-		    eventResize : function(event, delta, revertFunc)
-		    {
-//		    	alert(event.id);
-		    	// alert(moment(event.start).format('HH:mm'));
-		    	// alert(moment(event.end).format('HH:mm'));
-                var datestart = moment(event.start).format('DD/MM/YYYY');
-                var dateend = moment(event.end).format('DD/MM/YYYY');
-		    	var jammulai = moment(event.start).format('HH:mm');
-		    	var jamselesai = moment(event.end).format('HH:mm');
-		    	$.ajax({
-		    		method : 'GET',
-		    		url : '{{url("kalender/plan/edit/resize")}}',
-		    		data : { tgl_mul : datestart, tgl_sel : dateend, plan_id : event.id, start : jammulai, end : jamselesai }
-		    	});
-		    },
-			eventClick : function (calEvent, jsEvent, view)
-			{
-				var datestart = moment(calEvent.start).format('DD/MM/YYYY');
-				var startTime = moment(calEvent.start).format('HH:mm');
-				var endTime = moment(calEvent.end).format('HH:mm');
-				$('.todolistmodal').html("");
-				$('#date').html(datestart);
-				$('#time').html(startTime+"-"+endTime);
-				$('#bawahan').html("Nama Bawahan : " + calEvent.name );
-				$('.link-ubah').attr("href", "{{url('/kalender/plan/edit/')}}" + "/" + calEvent.id_user + "/" + calEvent.id);
-				{{--$('.link-ubah').attr("href", "{{url('/kalender/plan/edit/'.$user->id_user)}}" + "/" + calEvent.id);--}}
-				$.ajax
-				({
-					method : 'GET',
-					async : false,
-					url : '{{url("todo/get")}}',
-					data : { eventid : calEvent.id, userid : calEvent.id_user },
-					success : function(data)
-					{
-						$('.todolistmodal').html(data);
-					},
-				});
-				$('#modalshowtodo').modal('show');
-			},
-            select : function(start, end, jsEvent, view) {
-				var startTime = moment(start).format('HH:mm');
-				var endTime = moment(end).format('HH:mm');
-				var datestart = moment(start).format('DD/MM/YYYY');
-				var dateend = moment(end).format('DD/MM/YYYY');
-				//Pengecekan multiple date select
-				if (datestart == dateend) {
-					//Single date
-					if ($('#calendar').fullCalendar('getView').name != 'month') {
-						$('#modaljadwal').modal('show');
-						$('#tgl_mulai').val(start.getDate() + "/" + (start.getMonth() + 1) + "/" + start.getFullYear());
-						$('#tgl_selesai').val(end.getDate() + "/" + (end.getMonth() + 1) + "/" + end.getFullYear());
-						$('#datestart').html("Tanggal Mulai: " + datestart);//start.getDate() + "/" + (start.getMonth() + 1) + "/" + start.getFullYear());
-						$('#dateend').html("Tanggal Selesai: " + dateend);//end.getDate() + "/" + (end.getMonth() + 1) + "/" + end.getFullYear());
-						$('#timestart').val(startTime);
-						$('#timeend').val(endTime);
-						$('#calendar').fullCalendar('changeView', 'agendaDay');
-					}
-					else {
-						$('#calendar').fullCalendar('changeView', 'agendaDay');
-						$('#calendar').fullCalendar('gotoDate', start);
-					}
-				}
-				else {
-					//Multiple date
-					$('#modaljadwal').modal('show');
-					$('#tgl_mulai').val(start.getDate() + "/" + (start.getMonth() + 1) + "/" + start.getFullYear());
-					$('#tgl_selesai').val(end.getDate() + "/" + (end.getMonth() + 1) + "/" + end.getFullYear());
-					$('#datestart').html("Tanggal Mulai: " + datestart);//start.getDate() + "/" + (start.getMonth() + 1) + "/" + start.getFullYear());
-					$('#dateend').html("Tanggal Selesai: " + dateend);//end.getDate() + "/" + (end.getMonth() + 1) + "/" + end.getFullYear());
-					$('#timestart').val(startTime);
-					$('#timeend').val(endTime);
-				}
-			}
-		});
-		//buat jam
-		$('#timestart')
-			.bootstrapMaterialDatePicker({ date : false, format: 'HH:mm' })
-			.on('change', function(e, date)
-			{
-				$('#timeend')
-				.bootstrapMaterialDatePicker('setMinDate', date);	
-			});
-		$('#timeend').bootstrapMaterialDatePicker({ date: false, format: 'HH:mm'});
-		//tambah tugas per user
-		$(add_todo).click(function(e)
-		{
-			e.preventDefault();
-			if(x < max_todo)
-			{
-				$(wrapper).append(' <div class="panel panel-default"> <div class="panel-body"><div class="col-md-12"><span  style="float:left">Tugas ke ' + x + ' </span></div><div class="col-md-12"><div class="form-control-wrapper"><div class="form-group"><label for="judul_tugas' + x + '"> Judul Tugas : </label><input type="text" class="judul_tugas form-control" id="judul_tugas' + x + '" name="judul_tugas[]"></div><div class="form-group"><label for="deskripsi_tugas' + x + '">Deskripsi Tugas : </label><input type="text" class="deskripsi_tugas form-control" id="deskripsi_tugas' + x + '" name="deskripsi_tugas[]"></div></div></div><a class="btn btn-danger remove_field" style="float:right"><i class="fa fa-trash" aria-hidden="true"></i> Hapus Tugas</a></div></div> ')
-				x++;
-			}
-		});
-		$(wrapper).on("click",".remove_field", function(e) //user click on remove field
-		{
-			e.preventDefault();
-			$(this).parent('div').parent('div').remove();
-			x--;
-		})
-	});
-
-	function loadStore(id)
-	{
-//		var temp = $('#id_user').val();
-		$('#store_list').hide();
-		$.ajax
-		({
-			type : 'GET',
-			url : '{{url("/kalender/getstore")}}',
-			data : { userid : id },
-			success : function(data)
-			{
-				document.getElementById("store_code").innerHTML = data;
-				$('#store_code').html(data);
-				$('#store_list').show();
-			},
-			error : function(xhr, ajaxOptions, thrownError)
-			{
-				alert(xhr);
-				alert(thrownError);
-			}
-		});
-	}
-</script>
-@endsection
-
 @section('content')
 <head>
   <title>Timeline Absensi</title>
@@ -284,7 +107,7 @@
 								Pilih Toko :
 							</label>
 							<select name="store_code" id="store_code" class="form-control">
-								{{--Tampil data toko sesuai cabang--}}
+								{{--Tampil data toko sesuai user--}}
 							</select>
 						</div>
 					</div>
@@ -316,9 +139,18 @@
 				<p id = "bawahan" ></p>
 				<p id = "date" ></p>
 				<p id = "time" ></p>
+                <label for="store_code">
+                    Tugas :
+                </label>
 				<div class = 'todolistmodal'>
 					{{--menampilkan data to do dari modal--}}
 				</div>
+                <label for="store_code">
+                   Tugas Pokok :
+                </label>
+                <div class = 'listtugaspokok'>
+                    {{--menampilkan data to do dari modal--}}
+                </div>
 				<a class = "btn btn-warning link-ubah" href="#">
 					<i class="fa fa-pencil-square-o" aria-hidden="true"></i> Ubah Jadwal
 				</a>
@@ -326,4 +158,211 @@
 		</form>
 	</div>
 </body>
+@endsection
+
+
+@section('script')
+	<script src='{{url("js/moment.js")}}'></script>
+	<script src='{{url("js/fullcalendar.min.js")}}'></script>
+    <script src='{{url ("js/locale-all.js") }}'></script>
+	<script src='{{url("js/bootstrap-material-datetimepicker.js")}}'></script>
+	<script type="text/javascript">
+
+        $(document).ready(function()
+        {
+            var date = new Date();
+            var d = date.getDate();
+            var m = date.getMonth();
+            var y = date.getFullYear();
+            var wrapper = $(".field");
+            var add_todo = $(".add_field");
+            var edit_field = $(".edit_field");
+            var max_todo = 10; //maksimal to do user
+            var x = 1; //inisial dari to do
+
+            var calendar =
+            //buat kalender
+            $('#calendar')
+                .fullCalendar({
+                    locale : 'id',
+                    header :
+                        {
+                            left : 'prev,next today',
+                            center : 'title',
+                            right : 'month,agendaDay'
+                        },
+                    defaultView : 'month',
+                    selectable : true,
+                    selectHelper : true,
+                    editable : true,
+                    allday : false,
+                    eventSources: [
+                        {
+                            url: '{{url("/kalender/plan/".$user->id_user)}}'
+                        }
+                    ],
+                    eventDrop: function(event, delta, revertFunc)
+                    {
+                        //alert(moment(event.start).format('DD-MM-YYYY'));
+                        var datestart = moment(event.start).format('DD/MM/YYYY');
+                        var dateend = moment(event.end).format('DD/MM/YYYY');
+                        var jammulai = moment(event.start).format('HH:mm');
+                        var jamselesai = moment(event.end).format('HH:mm');
+                        $.ajax({
+                            method : 'GET',
+                            url : '{{url('kalender/plan/edit/drag')}}',
+                            data : { tgl_mul : datestart, tgl_sel : dateend, plan_id : event.id, start : jammulai, end : jamselesai}
+                        });
+                    },
+                    eventResize : function(event, delta, revertFunc)
+                    {
+//		    	alert(event.id);
+                        // alert(moment(event.start).format('HH:mm'));
+                        // alert(moment(event.end).format('HH:mm'));
+                        var datestart = moment(event.start).format('DD/MM/YYYY');
+                        var dateend = moment(event.end).format('DD/MM/YYYY');
+                        var jammulai = moment(event.start).format('HH:mm');
+                        var jamselesai = moment(event.end).format('HH:mm');
+                        $.ajax({
+                            method : 'GET',
+                            url : '{{url("kalender/plan/edit/resize")}}',
+                            data : { tgl_mul : datestart, tgl_sel : dateend, plan_id : event.id, start : jammulai, end : jamselesai }
+                        });
+                    },
+                    eventClick : function (calEvent, jsEvent, view)
+                    {
+                        var datestart = moment(calEvent.start).format('DD/MM/YYYY');
+                        var startTime = moment(calEvent.start).format('HH:mm');
+                        var endTime = moment(calEvent.end).format('HH:mm');
+                        $('.todolistmodal').html("");
+                        $('.listtugaspokok').html("");
+                        $('#date').html(datestart);
+                        $('#time').html(startTime+"-"+endTime);
+                        $('#bawahan').html("Nama Bawahan : " + calEvent.name );
+                        $('.link-ubah').attr("href", "{{url('/kalender/plan/edit/')}}" + "/" + calEvent.id_user + "/" + calEvent.id);
+                        {{--$('.link-ubah').attr("href", "{{url('/kalender/plan/edit/'.$user->id_user)}}" + "/" + calEvent.id);--}}
+                        $.ajax
+                        ({
+                            method : 'GET',
+                            async : false,
+                            url : '{{url("todo/get")}}',
+                            data : { eventid : calEvent.id, userid : calEvent.id_user },
+                            success : function(data)
+                            {
+                                $('.todolistmodal').html(data);
+                            },
+                        });
+                        $.ajax
+                        ({
+                            method : 'GET',
+                            async : false,
+                            url : '{{url("tugaspokok/getTP")}}',
+                            data : { eventid : calEvent.id, userid : calEvent.id_user },
+                            success : function(data)
+                            {
+                                $('.listtugaspokok').html(data);
+                            },
+                        });
+                        $('#modalshowtodo').modal('show');
+                    },
+                    select : function(start, end, jsEvent, view) {
+                        var startTime = moment(start).format('HH:mm');
+                        var endTime = moment(end).format('HH:mm');
+                        var datestart = moment(start).format('DD/MM/YYYY');
+                        var dateend = moment(end).format('DD/MM/YYYY');
+                        //Pengecekan multiple date select
+                        if (datestart == dateend) {
+                            //Single date
+                            if ($('#calendar').fullCalendar('getView').name != 'month') {
+                                $('#modaljadwal').modal('show');
+                                $('#tgl_mulai').val(start.getDate() + "/" + (start.getMonth() + 1) + "/" + start.getFullYear());
+                                $('#tgl_selesai').val(end.getDate() + "/" + (end.getMonth() + 1) + "/" + end.getFullYear());
+                                $('#datestart').html("Tanggal Mulai: " + datestart);//start.getDate() + "/" + (start.getMonth() + 1) + "/" + start.getFullYear());
+                                $('#dateend').html("Tanggal Selesai: " + dateend);//end.getDate() + "/" + (end.getMonth() + 1) + "/" + end.getFullYear());
+                                $('#timestart').val(startTime);
+                                $('#timeend').val(endTime);
+                                $('#calendar').fullCalendar('changeView', 'agendaDay');
+                            }
+                            else {
+                                $('#calendar').fullCalendar('changeView', 'agendaDay');
+                                $('#calendar').fullCalendar('gotoDate', start);
+                            }
+                        }
+                        else {
+                            //Multiple date
+                            $('#modaljadwal').modal('show');
+                            $('#tgl_mulai').val(start.getDate() + "/" + (start.getMonth() + 1) + "/" + start.getFullYear());
+                            $('#tgl_selesai').val(end.getDate() + "/" + (end.getMonth() + 1) + "/" + end.getFullYear());
+                            $('#datestart').html("Tanggal Mulai: " + datestart);//start.getDate() + "/" + (start.getMonth() + 1) + "/" + start.getFullYear());
+                            $('#dateend').html("Tanggal Selesai: " + dateend);//end.getDate() + "/" + (end.getMonth() + 1) + "/" + end.getFullYear());
+                            $('#timestart').val(startTime);
+                            $('#timeend').val(endTime);
+                        }
+                    }
+                });
+            //buat jam
+            $('#timestart')
+                .bootstrapMaterialDatePicker({ date : false, format: 'HH:mm' })
+                .on('change', function(e, date)
+                {
+                    $('#timeend')
+                        .bootstrapMaterialDatePicker('setMinDate', date);
+                });
+            $('#timeend').bootstrapMaterialDatePicker({ date: false, format: 'HH:mm'});
+            //tambah tugas per user
+            $(add_todo).click(function(e)
+            {
+                e.preventDefault();
+                if(x < max_todo)
+                {
+                    $(wrapper).append(' <div class="panel panel-default"> <div class="panel-body"><div class="col-md-12"><span  style="float:left">Tugas ke ' + x + ' </span></div><div class="col-md-12"><div class="form-control-wrapper"><div class="form-group"><label for="judul_tugas' + x + '"> Judul Tugas : </label><input type="text" class="judul_tugas form-control" id="judul_tugas' + x + '" name="judul_tugas[]"></div><div class="form-group"><label for="deskripsi_tugas' + x + '">Deskripsi Tugas : </label><input type="text" class="deskripsi_tugas form-control" id="deskripsi_tugas' + x + '" name="deskripsi_tugas[]"></div></div></div><a class="btn btn-danger remove_field" style="float:right"><i class="fa fa-trash" aria-hidden="true"></i> Hapus Tugas</a></div></div> ')
+                    x++;
+                }
+            });
+            $(wrapper).on("click",".remove_field", function(e) //user click on remove field
+            {
+                e.preventDefault();
+                $(this).parent('div').parent('div').remove();
+                x--;
+            })
+        });
+
+        function loadStore(id)
+        {
+//		var temp = $('#id_user').val();
+            $('#store_list').hide();
+            $.ajax
+            ({
+                type : 'GET',
+                url : '{{url("/kalender/getstore")}}',
+                data : { userid : id },
+                success : function(data)
+                {
+                    document.getElementById("store_code").innerHTML = data;
+                    $('#store_code').html(data);
+                    $('#store_list').show();
+                },
+                error : function(xhr, ajaxOptions, thrownError)
+                {
+                    alert(xhr);
+                    alert(thrownError);
+                }
+            });
+        }
+        (function()
+        {
+            var calConfig = [{
+                "title": "Holidays in Indonesia",
+                "did": "ZW4uaW5kb25lc2lhbiNob2xpZGF5QGdyb3VwLnYuY2FsZW5kYXIuZ29vZ2xlLmNvbQ",
+                "creator": "en.indonesian#holiday@group.v.calendar.google.com"
+            }];
+            var select = document.getElementById('holidayCalendar');
+            for (var i = 0; i < calConfig.length; i++) {
+                var option = document.createElement('option');
+                option.value = calConfig[i].creator;
+                option.text = calConfig[i].title;
+                select.appendChild(option);
+            }
+        })();
+	</script>
 @endsection

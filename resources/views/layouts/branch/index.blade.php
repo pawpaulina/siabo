@@ -16,7 +16,7 @@
 @section('content')
 <h1 class="col-md-12">Data Cabang</h1>
 
-@if ($branches->count())
+@if ($branchs->count())
 
 	<nav id="nav">
 		<h3 class="col-md-2">
@@ -37,7 +37,7 @@
 			</thead>
 
 			<tbody>
-				@foreach ($branches as $branch)
+				@foreach ($branchs as $branch)
 					<tr>
 						<td>{{ $branch->id_branch }}</td>
 						<td>{{ $branch->branch_name }}</td>

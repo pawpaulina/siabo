@@ -50,6 +50,9 @@
 						<li>
 							<a href="{{ url('/kalender/'.auth()->id()) }}">Kalender</a>
 						</li>
+						<li>
+							<a href="{{ url('/tugaspokok/all') }}">Tugas Pokok</a>
+						</li>
 					@endif
 				</ul>
 
@@ -58,9 +61,9 @@
 						@if(!Request::is('auth/login') && !Request::is('/'))
 							<li><a href="{{ url('/auth/login') }}">Login</a></li>
 						@endif
-						@if(!Request::is('auth/register'))
-							<li><a href="{{ url('/auth/register') }}">Register</a></li>
-						@endif
+						{{--@if(!Request::is('auth/register'))--}}
+							{{--<li><a href="{{ url('/auth/register') }}">Register</a></li>--}}
+						{{--@endif--}}
 					@else
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-user-circle-o" aria-hidden="true"></i> {{ auth()->user()->name }} <span class="caret"></span></a>

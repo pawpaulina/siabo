@@ -11,6 +11,15 @@
 */
 
 /**********************API**********************/
+//Cek udah submit tugas blm
+Route::GET('api/eks/ceksubmit/{idtodo}', 'APIController@cekSubmit');
+
+//Submit tugas
+Route::POST('api/eks/submitTugas/{idjadwal}','APIController@simpanGambar');
+
+//Cek udah check in blm
+Route::GET('api/eks/cekcheckin/{id_plan}', 'APIController@cekEksekusi');
+
 //Update check in
 Route::POST('api/eks/checkin/{id_user}', 'APIController@checkIn');
 
@@ -45,6 +54,7 @@ Route::GET('user/userdetails', 'APIController@getUserDetails');
 
 //menampilkan Data semua User
 Route::resource('/user', 'UserController');
+Route::GET('/user/tampilAtasan','UserController@show');
 
 //Login User
 Route::POST('auth/login', 'Auth\AuthController@getLogin');
@@ -131,3 +141,19 @@ Route::GET('/todo/get','ToDoController@getTodo');
 Route::GET('/todo/{id_user}', 'ToDoController@index');
 
 Route::GET('/todo/delete/{id}', 'ToDoController@delTodo');
+
+/**********************Tugas Pokok**********************/
+Route::GET('/tugaspokok/all', 'TugasPokokController@index');
+
+//Tambah Tugas Pokok
+Route::GET('/tugaspokok/tambah','TugasPokokController@create');
+Route::POST('/tugaspokok/tambah','TugasPokokController@store');
+
+//Edit Tugas Pokok
+Route::GET('tugaspokok/editTP/{id}', 'TugasPokokController@edit');
+Route::POST('tugaspokok/editTP/{id}', 'TugasPokokController@update');
+
+//Delete Tugas Pokok
+Route::GET('tugaspokok/deleteTP/{id}', 'TugasPokokController@destroy');
+
+Route::GET('/tugaspokok/getTP','TugasPokokController@getTP');

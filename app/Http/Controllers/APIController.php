@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Branch;
+use App\Image;
+use App\Bukti;
 use App\Eksekusi;
 use App\Role;
 use App\User;
@@ -200,7 +202,7 @@ class APIController extends Controller
         {
             return response()->json( ['error' => 'could_not_create_token'], 500);
         }
-        $todo = ToDo::select('to_do.id', 'judul_tugas', 'deskripsi_tugas', 'keterangan')
+        $todo = ToDo::select('to_do.id', 'judul_tugas', 'deskripsi_tugas', 'keterangan', 'to_do.id_bukti')
             ->join('user','to_do.id_user', '=', 'user.id_user')
             ->where('user.id_user', $id_user)
             ->where('to_do.id_plan',$id_jadwal)
@@ -243,7 +245,7 @@ class APIController extends Controller
         return response()->json(['todoDetail' => $todo]);
     }
 
-    public function checkIn(Request $request)
+    public function checkIn(Request $request, $id_user)
     {
         $tglCheckin = Carbon::now();
         try {
@@ -265,8 +267,8 @@ class APIController extends Controller
             $eks = new Eksekusi();
             $eks->id_store = $request->id_store;
             $eks->tgl_checkin = $tglCheckin;
-            $eks->id_user = $request->id_user;
-            $eks->id_todo = $request->id_todo;
+            $eks->id_user = $id_user;
+            $eks->id_plan = $request->id_plan;
             $eks->save();
         } catch (Exception $e)
         {
@@ -274,5 +276,169 @@ class APIController extends Controller
         }
 
         return response()->json(['success' => 'saved'], 200);
+    }
+
+    //cek udah eksekusi atau blm
+    public function cekEksekusi($id_plan)
+    {
+        try {
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['user_not_found'], 404);
+            }
+        } catch (TokenExpiredException $e) {
+            return response()->json(['token_expired'], $e->getStatusCode());
+        } catch (TokenInvalidException $e) {
+            return response()->json(['token_invalid'], $e->getStatusCode());
+        } catch (JWTException $e) {
+            return response()->json(['token_absent'], $e->getStatusCode());
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'could_not_create_token'], 500);
+        }
+
+        $cek = Eksekusi::select("id_plan", "t_eks.created_at")
+            ->join('t_plan','t_plan.id','=','t_eks.id_plan')
+            ->where ('t_plan.id','=',$id_plan)
+            ->first();
+//        dd($id_plan);
+        if($cek!=null)
+        {
+            return response()->json($cek);
+        }
+        else
+        {
+            return response()->json(['id_plan'=>0]);
+        }
+    }
+
+    //untuk upload gambar
+    public function simpanGambar(Request $request, $idjadwal)
+    {
+        try {
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['user_not_found'], 404);
+            }
+        } catch (TokenExpiredException $e) {
+            return response()->json(['token_expired'], $e->getStatusCode());
+        } catch (TokenInvalidException $e) {
+            return response()->json(['token_invalid'], $e->getStatusCode());
+        } catch (JWTException $e) {
+            return response()->json(['token_absent'], $e->getStatusCode());
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'could_not_create_token'], 500);
+        }
+
+        try
+        {
+            \DB::beginTransaction();
+
+            $photo = $this->returnBlankIfNull($request->gambar);
+            $idtodo = $this->returnBlankIfNull($request->id_todo);
+            $iduser = $this->returnBlankIfNull($request->id_user);
+            $tgl = Carbon::now();
+            if ($photo == null) {
+                return response()->json(['Foto belum dipilih'], 400);
+            }
+            try {
+                if ($photo == null) {
+                    //skip
+                } else {
+                    $photoArray = json_decode(utf8_encode($request->gambar), TRUE);
+                    if ($photoArray == null) {
+                        return response()->json(['Foto belum dipilih1'], 400);
+                    } else if ($photoArray != null) {
+                        //upload gambar pertama
+                        try {
+                            $png_url = "".$iduser." eksekusi ".$idtodo."-1".".png";
+                            $path = public_path() . "/images/" . $idtodo . $png_url;
+                            $url = str_replace('https://', 'http://', url()) . "/images/" . $idtodo . "/" . $png_url;
+                            if ($this->returnBlankIfNull($photoArray['foto0']) != "") {
+                                $data = base64_decode(preg_replace('#^data:images/\w+;base64,#i', '', $photoArray['foto0']));
+                                if (file_exists($path)) {
+                                    Image::destroy(Image::where('url', $url)->pluck('id'));
+                                    unlink($path);
+                                }
+                                file_put_contents($path, $data);
+                                $img1 = new Image();//Image::firstOrNew(['url' => $url]);
+                                $img1->url = $url;
+                                $img1->save();
+                            } else {
+                                Image::destroy(Image::where('url', $url)->pluck('id'));
+                            }
+                        } catch (Exception $ex) {
+                            \DB::rollBack();
+                            return response()->json(['error'=>'save_failed'], 500);
+                        }
+                        $img = Image::where('url', 'like', '%https:%')->get();
+                        foreach ($img as $row) {
+                            $ig = Image::find($row->id);
+                            $ig->url = str_replace('https', 'http', $ig->url);
+                            $ig->save();
+                        };
+                    }
+//                    dd($img1);
+                    $bukti = new Bukti;
+                    $bukti->gambar = $img1->id;
+
+                    $bukti->keterangan = $request->keterangan;
+                    $bukti->save();
+                }
+            }
+            catch (Exception $e)
+            {
+                //return error
+                \DB::rollBack();
+                return response()->json(['error'=>'save_failed'], 500);
+            }
+            $todo = ToDo::findorfail($request->id_todo);
+            $todo->id_bukti = $bukti->id;
+            $todo->save();
+
+            \DB::commit();
+            return response()->json(['success'=>'data_saved'], 201);
+        }
+        catch(\QueryException $ex)
+        {
+            \DB::rollBack();
+            return response()->json(['error'=>'save_failed'], 500);
+        }
+    }
+
+    public function returnBlankIfNull ($value){
+        if($value != null && $value != ""){
+            return $value;
+        }else{
+            return "";
+        }
+    }
+
+    //cek udah submit blm
+    public function cekSubmit($idtodo)
+    {
+        try {
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['user_not_found'], 404);
+            }
+        } catch (TokenExpiredException $e) {
+            return response()->json(['token_expired'], $e->getStatusCode());
+        } catch (TokenInvalidException $e) {
+            return response()->json(['token_invalid'], $e->getStatusCode());
+        } catch (JWTException $e) {
+            return response()->json(['token_absent'], $e->getStatusCode());
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'could_not_create_token'], 500);
+        }
+
+        $cek = ToDo::select("bukti.id", "bukti.created_at")
+            ->join('bukti','bukti.id','=','to_do.id_bukti')
+            ->where ('to_do.id','=',$idtodo)
+            ->first();
+        if($cek!=null)
+        {
+            return response()->json($cek);
+        }
+        else
+        {
+            return response()->json(['id_plan'=>0]);
+        }
     }
 }

@@ -15,8 +15,8 @@ class BranchController extends Controller
 
     public function index()
     {
-        $branches = Branch::all();
-        return view('layouts.branch.index', compact('branches'));
+        $branchs = Branch::all();
+        return view('layouts.branch.index', compact('branchs'));
     }
 
     public function create(Request $request)

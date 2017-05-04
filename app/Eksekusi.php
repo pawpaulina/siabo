@@ -19,5 +19,5 @@ class Eksekusi extends Model implements AuthenticatableContract,
 	protected $table = 't_eks';
 	protected $primaryKey = 'id';
 	 
-	protected $fillable = array('id', 'id_store', 'id_user', 'tgl_checkin', 'id_todo');
+	protected $fillable = array('id', 'id_store', 'id_user', 'tgl_checkin', 'id_plan');
 }

@@ -33,9 +33,17 @@ class UserController extends Controller
         //
     }
 
-    public function show($id)
+    public function show(Request $request)
     {
-        //
+        $user = User::select('id_user', 'name')
+            ->where('id_branch','=',$request->cabangid)
+            ->get();
+        $userlist = "";
+        foreach ($user as $row)
+        {
+            $userlist .="<option value='". $row->id_user ."'>". $row->name ."</option>";
+        }
+        return $userlist;
     }
 
     public function edit($id)

@@ -1,5 +1,30 @@
 @extends('app')
-
+@section('script')
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#cabang').hide();
+        });
+        function loadAtasan(id)
+        {
+//            $('#cabang').hide();
+            $.ajax
+            ({
+                type : 'GET',
+                url : '{{url("/user/tampilAtasan")}}',
+                data : { cabangid : id},
+                success : function (data)
+                {
+                    $('#cabang').html(data);
+                    $('#user_list').show();
+                },
+                error : function(xhr, ajaxOptions, thrownError)
+                {
+                    alert(xhr);
+                    alert(thrownError);
+                }
+            });
+        }
+    </script>
 @section('content')
 <head>
     <title>Register User</title>
@@ -94,21 +119,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label class="col-md-4 control-label">
-                                    Cabang
-                                </label>
-                                <div class="col-md-6">
-                                    <select name="id_branch" id="id_branch" class="form-control">
-                                        @foreach ($branch as $send)
-                                            <option value="{{$send->id_branch}}">
-                                                {{$send->branch_name}}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
+                            <div class="form-group" >
                                 <div class="col-md-6 col-md-offset-4">
                                     <button type="submit" class="btn btn-success">
                                         <i class="fa fa-plus-circle" aria-hidden="true"></i> Simpan
