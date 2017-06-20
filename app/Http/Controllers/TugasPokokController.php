@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Hari;
 use App\TugasPokok;
 use Illuminate\Http\Request;
-
+use Carbon\Carbon;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Mockery\CountValidator\Exception;
@@ -54,7 +54,6 @@ class TugasPokokController extends Controller
 
     public function store(Request $request)
     {
-        $tPokok = $request->except('token');
 //        $this->validate($request, [
 //            'hari' => 'required',
 //            'judul' => 'required',
@@ -75,6 +74,16 @@ class TugasPokokController extends Controller
 //            \DB::rollback();
 //            throw $ex;
 //        }
+//        dd($request->expdate);
+        if($request->expdate == "")
+        {
+            $exp = null;
+        }
+        else
+        {
+            $exp = Carbon::createFromFormat('d-m-Y', $request->expdate);
+        }
+//        dd($exp);
         try
         {
             \DB::beginTransaction();
@@ -83,12 +92,12 @@ class TugasPokokController extends Controller
             $tPokok->judul = $request->judul;
             $tPokok->deskripsi = $request->deskripsi;
             $tPokok->foto = $request->foto;
-            $tPokok->exp_date = $request->exp;
+            $tPokok->exp_date = $exp;
 
             $tPokok->save();
             \DB::commit();
 
-            return view('layouts.TugasPokok.index')->with('tugasPokok', $tPokok);
+            return redirect('/tugaspokok/all');
         }
         catch (\QueryException $ex)
         {

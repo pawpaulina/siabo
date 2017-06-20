@@ -84,7 +84,7 @@
                                     Tanggal Kadaluarsa
                                 </label>
                                 <div class="col-md-6">
-                                    <input type="text" id="expdate" name="expdate" class="form-control" placeholder="Tanggal Kadaluarsa" required="">
+                                    <input type="text" id="expdate" name="expdate" class="form-control" placeholder="Tanggal Kadaluarsa">
                                 </div>
                             </div>
                             <div class="form-group">
