@@ -10,7 +10,8 @@
         "nesbot/carbon": "^1.21",
         "bestmomo/scafold": "^1.0",
 		"tymon/jwt-auth": "0.5.*",
-        "yajra/laravel-oci8": "5.1.*"
+        "yajra/laravel-oci8": "5.1.*",
+        "joshtronic/php-holidayapi": "dev-master"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

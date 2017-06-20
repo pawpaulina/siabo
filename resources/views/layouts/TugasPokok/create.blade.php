@@ -2,6 +2,8 @@
 @section('content')
     <head>
         <title>Tambah Tugas Pokok</title>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href='{{url("css/bootstrap-material-datetimepicker.css")}}' rel='stylesheet' />
         <style type="text/css">
             body {
                 text-align: left;
@@ -31,20 +33,6 @@
 
                         <form method="POST" class="form-horizontal" action="{{url('tugaspokok/tambah')}}">
                             <input name="_token" type="hidden" value="{{csrf_token()}}">
-                            {{--<div class="form-group">--}}
-                                {{--<label class="col-md-4 control-label">--}}
-                                    {{--Pilih Hari--}}
-                                {{--</label>--}}
-                                {{--<div class="col-md-6">--}}
-                                    {{--<select name="hari" id="hari" class="form-control">--}}
-                                        {{--@foreach ($hari as $sendRow)--}}
-                                            {{--<option value="{{$sendRow->id}}">--}}
-                                                {{--{{$sendRow->nama_hari}}--}}
-                                            {{--</option>--}}
-                                        {{--@endforeach--}}
-                                    {{--</select>--}}
-                                {{--</div>--}}
-                            {{--</div>--}}
                             <div class="form-group">
                                 <label class="col-md-4 control-label">
                                     Judul
@@ -83,21 +71,21 @@
                                 <div class="col-md-6">
                                     <div class="radio">
                                         <label>
-                                            <input type="radio" class="flat" name="exp" value="1" required="" id="expyes"> Ya
+                                            <input type="radio" class="flat" name="exp" required="" id="expyes" onclick="ExpiredCheck();"> Ya
                                         </label>
                                         <label>
-                                            <input type="radio" class="flat" name="exp" value="0" required="" id="expno"> Tidak
+                                            <input type="radio" class="flat" name="exp" required="" id="expno" onclick="ExpiredCheck();"> Tidak
                                         </label>
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group" name="date" style="display: none">
-                                <label class="col-md-4 control-label">
+                            <div id="ifYes" class="form-group" name="date" style="display: none">
+                                <label class="col-md-4 control-label" for="expdate">
                                     Tanggal Kadaluarsa
                                 </label>
-                                {{--<div class="col-md-6">--}}
-                                    {{--<input type="text" id="expdate" name="expdate" class="form-control" placeholder="Tanggal Kadaluarsa" required="">--}}
-                                {{--</div>--}}
+                                <div class="col-md-6">
+                                    <input type="text" id="expdate" name="expdate" class="form-control" placeholder="Tanggal Kadaluarsa" required="">
+                                </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-md-6 col-md-offset-4">
@@ -118,22 +106,18 @@
 
 @section('script')
     <script src='{{url("js/moment.js")}}'></script>
-    <script src='{{url("js/fullcalendar.min.js")}}'></script>
     <script src='{{url("js/bootstrap-material-datetimepicker.js")}}'></script>
     <script type="text/javascript">
-
         $(document).ready(function () {
-//            $('#expdate').bootstrapMaterialDatePicker({ date: true, format: 'DD-MM-YYYY'});
-            $('#expyes').click(function () {
-                $('#date').show();
-            });
-            $('#expno').click(function () {
-                $('#date').hide();
-            });
+            $('#expdate').bootstrapMaterialDatePicker({ time : false, format: 'DD-MM-YYYY'});
         });
-//    function loadDate(exp)
-//    {
-//        $('#expdate').show();
-//    }
+
+        function ExpiredCheck() {
+            if (document.getElementById('expyes').checked) {
+                document.getElementById('ifYes').style.display = 'block';
+            }
+            else document.getElementById('ifYes').style.display = 'none';
+
+        }
     </script>
 @endsection

@@ -184,7 +184,6 @@
             //buat kalender
             $('#calendar')
                 .fullCalendar({
-                    locale : 'id',
                     header :
                         {
                             left : 'prev,next today',
@@ -203,7 +202,6 @@
                     ],
                     eventDrop: function(event, delta, revertFunc)
                     {
-                        //alert(moment(event.start).format('DD-MM-YYYY'));
                         var datestart = moment(event.start).format('DD/MM/YYYY');
                         var dateend = moment(event.end).format('DD/MM/YYYY');
                         var jammulai = moment(event.start).format('HH:mm');
@@ -216,9 +214,6 @@
                     },
                     eventResize : function(event, delta, revertFunc)
                     {
-//		    	alert(event.id);
-                        // alert(moment(event.start).format('HH:mm'));
-                        // alert(moment(event.end).format('HH:mm'));
                         var datestart = moment(event.start).format('DD/MM/YYYY');
                         var dateend = moment(event.end).format('DD/MM/YYYY');
                         var jammulai = moment(event.start).format('HH:mm');
@@ -291,8 +286,8 @@
                         else {
                             //Multiple date
                             $('#modaljadwal').modal('show');
-                            $('#tgl_mulai').val(start.getDate() + "/" + (start.getMonth() + 1) + "/" + start.getFullYear());
-                            $('#tgl_selesai').val(end.getDate() + "/" + (end.getMonth() + 1) + "/" + end.getFullYear());
+                            $('#tgl_mulai').val(moment(event.start).format('DD/MM/YYYY'));//start.getDate() + "/" + (start.getMonth() + 1) + "/" + start.getFullYear());
+                            $('#tgl_selesai').val(moment(event.end).format('DD/MM/YYYY'));//end.getDate() + "/" + (end.getMonth() + 1) + "/" + end.getFullYear());
                             $('#datestart').html("Tanggal Mulai: " + datestart);//start.getDate() + "/" + (start.getMonth() + 1) + "/" + start.getFullYear());
                             $('#dateend').html("Tanggal Selesai: " + dateend);//end.getDate() + "/" + (end.getMonth() + 1) + "/" + end.getFullYear());
                             $('#timestart').val(startTime);
@@ -349,20 +344,5 @@
                 }
             });
         }
-        (function()
-        {
-            var calConfig = [{
-                "title": "Holidays in Indonesia",
-                "did": "ZW4uaW5kb25lc2lhbiNob2xpZGF5QGdyb3VwLnYuY2FsZW5kYXIuZ29vZ2xlLmNvbQ",
-                "creator": "en.indonesian#holiday@group.v.calendar.google.com"
-            }];
-            var select = document.getElementById('holidayCalendar');
-            for (var i = 0; i < calConfig.length; i++) {
-                var option = document.createElement('option');
-                option.value = calConfig[i].creator;
-                option.text = calConfig[i].title;
-                select.appendChild(option);
-            }
-        })();
 	</script>
 @endsection

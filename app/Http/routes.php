@@ -13,9 +13,11 @@
 /**********************API**********************/
 //Cek udah submit tugas blm
 Route::GET('api/eks/ceksubmit/{idtodo}', 'APIController@cekSubmit');
+Route::GET('api/eks/ceksubmitTP/{idtodo}', 'APIController@cekSubmitTP');
 
 //Submit tugas
-Route::POST('api/eks/submitTugas/{idjadwal}','APIController@simpanGambar');
+Route::POST('api/eks/submitTugas/{id_plan}','APIController@simpanGambar'); //tgs biasa
+Route::POST('api/eks/submitTP/{id_plan}','APIController@submitTP'); //tgs pokok
 
 //Cek udah check in blm
 Route::GET('api/eks/cekcheckin/{id_plan}', 'APIController@cekEksekusi');

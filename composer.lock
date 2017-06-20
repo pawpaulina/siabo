@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "2ea557556bcc8573b97e54806272b1e9",
+    "content-hash": "607255b38b61894e48603c6d6d42185b",
     "packages": [
         {
             "name": "bestmomo/scafold",
@@ -402,6 +402,52 @@
                 "tokenizer"
             ],
             "time": "2016-12-07T09:37:55+00:00"
+        },
+        {
+            "name": "joshtronic/php-holidayapi",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/joshtronic/php-holidayapi.git",
+                "reference": "ad4f80f6262d6d4b24aac9ecbceed5bdf96f9a73"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/joshtronic/php-holidayapi/zipball/ad4f80f6262d6d4b24aac9ecbceed5bdf96f9a73",
+                "reference": "ad4f80f6262d6d4b24aac9ecbceed5bdf96f9a73",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "satooshi/php-coveralls": "~1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "HolidayAPI\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Josh Sherman",
+                    "email": "hello@holidayapi.com",
+                    "homepage": "https://holidayapi.com,"
+                }
+            ],
+            "description": "Official PHP library for Holiday API",
+            "homepage": "https://github.com/joshtronic/php-holidayapi",
+            "keywords": [
+                "holiday",
+                "holidayapi",
+                "holidays"
+            ],
+            "time": "2016-08-12 02:01:41"
         },
         {
             "name": "laravel/framework",
@@ -2447,12 +2493,12 @@
             "version": "0.9.7",
             "source": {
                 "type": "git",
-                "url": "https://github.com/padraic/mockery.git",
+                "url": "https://github.com/mockery/mockery.git",
                 "reference": "4de7969f4664da3cef1ccd83866c9f59378c3371"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/4de7969f4664da3cef1ccd83866c9f59378c3371",
+                "url": "https://api.github.com/repos/mockery/mockery/zipball/4de7969f4664da3cef1ccd83866c9f59378c3371",
                 "reference": "4de7969f4664da3cef1ccd83866c9f59378c3371",
                 "shasum": ""
             },
@@ -3679,7 +3725,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "joshtronic/php-holidayapi": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
