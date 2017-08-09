@@ -14,14 +14,14 @@
 	</script>
 @endsection
 @section('content')
-<h1 class="col-md-12">Data Cabang</h1>
+<h1 class="col-md-12">Data Hari Libur</h1>
 
-@if ($branches->count())
+@if ($liburr->count())
 
 	<nav id="nav">
 		<h3 class="col-md-2">
-			<a class="btn btn-success" href="{{asset('branch/tambah')}}">
-				<i class="fa fa-plus-circle" aria-hidden="true"></i> Cabang Baru
+			<a class="btn btn-success" href="{{asset('libur/tambah')}}">
+				<i class="fa fa-plus-circle" aria-hidden="true"></i> Hari Libur Baru
 			</a>
 		</h3>
 	</nav>
@@ -29,20 +29,22 @@
 		<table class="table table-striped table-bordered">
 			<thead>
 				<tr>
-					<th>ID Cabang</th>
-					<th>Nama Cabang</th>
+					<th>ID Libur</th>
+					<th>Tanggal Libur</th>
+					<th>Keterangan</th>
 					<th>Ubah</th>
 					<th>Hapus</th>
 				</tr>
 			</thead>
 
 			<tbody>
-				@foreach ($branches as $branch)
+				@foreach ($liburr as $libur)
 					<tr>
-						<td>{{ $branch->id_branch }}</td>
-						<td>{{ $branch->branch_name }}</td>
-						<td><a class="btn btn-warning" href="{{url('branch/editbranch/'. $branch->id_branch)}}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
-						<td><a class="btn btn-danger" data-href="{{url('branch/deletebranch/'. $branch->id_branch)}}" href="#modaldelete" data-toggle="modal"><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>
+						<td>{{ $libur->id }}</td>
+						<td>{{ $libur->tgl_Libur }}</td>
+						<td>{{ $libur->keterangan_Libur }}</td>
+						<td><a class="btn btn-warning" href="{{url('libur/edit/'. $libur->id)}}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
+						<td><a class="btn btn-danger" data-href="{{url('libur/hapus/'. $libur->id)}}" href="#modaldelete" data-toggle="modal"><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>
 					</tr>
 				@endforeach
 			</tbody>
@@ -70,7 +72,7 @@
 		</ul>
 	</div>
 @else
-	Belum ada data cabang.
+	Belum ada data hari libur.
 @endif
 
 @stop

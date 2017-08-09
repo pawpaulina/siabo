@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\Event;
+use App\Libur;
 use App\TugasPokok;
 use Illuminate\Http\Request;
 use App\User;
@@ -157,6 +157,13 @@ class KalenderController extends Controller
         }
 
         return $plan;
+    }
+
+    public function getLibur(Request $request)
+    {
+        $libur = Libur::SelectRaw("id, true as allDay, keterangan_Libur as title, tgl_Libur as start, tgl_Libur as end")
+        ->get();
+        return $libur;
     }
 
     public function getStore(Request $request)

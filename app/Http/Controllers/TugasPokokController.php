@@ -28,10 +28,13 @@ class TugasPokokController extends Controller
 
     public function getTP()
     {
+        $today = Carbon::now();
         try
         {
             $listOptions = "";
             $tugasPokok = TugasPokok::select('id', 'judul', 'deskripsi', 'foto', 'exp_date')
+                ->where('exp_date', '>=', $today)
+                ->orWhere('exp_date',NULL)
                 ->get();
             foreach ($tugasPokok as $row)
             {
@@ -54,27 +57,6 @@ class TugasPokokController extends Controller
 
     public function store(Request $request)
     {
-//        $this->validate($request, [
-//            'hari' => 'required',
-//            'judul' => 'required',
-//            'deskripsi' => 'required',
-//            'foto' => 'required',
-//        ]);
-//        \DB::beginTransaction();
-//        try
-//        {
-//            TugasPokok::create($tPokok);
-//            \DB::commit();
-//
-//            alert()->success('Data berhasil di tambahkan', 'Tambah Data Berhasil!');
-//            return redirect()->route('layouts.TugasPokok.index');
-//        }
-//        catch (\QueryException $ex)
-//        {
-//            \DB::rollback();
-//            throw $ex;
-//        }
-//        dd($request->expdate);
         if($request->expdate == "")
         {
             $exp = null;

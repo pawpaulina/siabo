@@ -73,7 +73,20 @@ Route::POST('user/edituser/{id_user}', 'UserController@update');
 
 //Delete User
 Route::GET('user/deleteuser/{id_user}', 'UserController@destroy');
+/**********************Libur**********************/
+//menampilkan Data semua Hari Libur
+Route::GET('/libur', 'LiburController@index');
 
+//Tambah Data Hari Libur Baru
+Route::GET('/libur/tambah','LiburController@create');
+Route::POST('/libur/tambah','LiburController@save');
+
+//Edit Hari Libur
+Route::GET('libur/edit/{id}', 'LiburController@edit');
+Route::POST('libur/edit/{id}', 'LiburController@update');
+
+//Delete Hari Libur
+Route::GET('libur/delete/{id}', 'LiburController@destroy');
 
 /**********************Branch**********************/
 //Tambah Data Cabang Baru
@@ -121,6 +134,8 @@ Route::POST('store/editstore/{id}', 'StoreController@update');
 Route::GET('store/deletestore/{id}', 'StoreController@destroy');
 
 /**********************Kalender**********************/
+
+Route::GET('/kalender/libur', 'KalenderController@getLibur');
 
 Route::GET('/kalender/getstore', 'KalenderController@getStore');
 

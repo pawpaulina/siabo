@@ -181,6 +181,7 @@ class APIController extends Controller
     /****Ambil Data Tugas****/
     public function getTugas($id_user, $id_jadwal)
     {
+        $today = Carbon::now();
         try
         {
             if (!$user = JWTAuth::parseToken()->authenticate())
@@ -210,7 +211,10 @@ class APIController extends Controller
             ->where('to_do.id_plan',$id_jadwal)
             ->get();
         $tugasPokok = TugasPokok::select('id', 'judul', 'deskripsi', 'foto', 'exp_date')
+            ->where('exp_date', '>=', $today)
+            ->orWhere('exp_date',NULL)
             ->get();
+//        dd($tugasPokok);
         return response()->json(['todoDetail' => $todo, 'tugasPokok' => $tugasPokok]);
     }
 

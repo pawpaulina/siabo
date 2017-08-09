@@ -53,6 +53,9 @@
 						<li>
 							<a href="{{ url('/tugaspokok/all') }}">Tugas Pokok</a>
 						</li>
+						<li>
+							<a href="{{ url('/libur') }}">Libur</a>
+						</li>
 					@endif
 				</ul>
 

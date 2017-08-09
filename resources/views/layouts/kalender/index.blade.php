@@ -49,13 +49,13 @@
 		<div class="inner">
 			<h1>Absensi</h1>
 			
-			<nav id="nav">
-				<h3>
-					<a href="{{asset('/kalender/'.$user->id_user)}}">Kalender</a> |
-					<a href="{{asset('/user')}}">User</a> |
-					<a href="{{asset('/branch')}}">Cabang</a>
-				</h3>
-			</nav>
+			{{--<nav id="nav">--}}
+				{{--<h3>--}}
+					{{--<a href="{{asset('/kalender/'.$user->id_user)}}">Kalender</a> |--}}
+					{{--<a href="{{asset('/user')}}">User</a> |--}}
+					{{--<a href="{{asset('/branch')}}">Cabang</a>--}}
+				{{--</h3>--}}
+			{{--</nav>--}}
 		</div>
 	</header>
 	</br>
@@ -199,6 +199,13 @@
                         {
                             url: '{{url("/kalender/plan/".$user->id_user)}}'
                         }
+                        ,{
+                            url: '{{url("/kalender/libur")}}',
+                            color : 'red',
+                            eventOverlap : false,
+                            draggable: false,
+                            editable: false,
+                        }
                     ],
                     eventDrop: function(event, delta, revertFunc)
                     {
@@ -271,9 +278,9 @@
                             if ($('#calendar').fullCalendar('getView').name != 'month') {
                                 $('#modaljadwal').modal('show');
                                 $('#tgl_mulai').val(start.getDate() + "/" + (start.getMonth() + 1) + "/" + start.getFullYear());
-                                $('#tgl_selesai').val(end.getDate() + "/" + (end.getMonth() + 1) + "/" + end.getFullYear());
+                                $('#tgl_selesai').val(start.getDate() + "/" + (start.getMonth() + 1) + "/" + start.getFullYear());
                                 $('#datestart').html("Tanggal Mulai: " + datestart);//start.getDate() + "/" + (start.getMonth() + 1) + "/" + start.getFullYear());
-                                $('#dateend').html("Tanggal Selesai: " + dateend);//end.getDate() + "/" + (end.getMonth() + 1) + "/" + end.getFullYear());
+                                $('#dateend').html("Tanggal Selesai: " + datestart);//end.getDate() + "/" + (end.getMonth() + 1) + "/" + end.getFullYear());
                                 $('#timestart').val(startTime);
                                 $('#timeend').val(endTime);
                                 $('#calendar').fullCalendar('changeView', 'agendaDay');
